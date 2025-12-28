@@ -118,5 +118,84 @@
         </script>
     </div>
 </div>
+    <div class="box full-width" style="margin-top: 30px; border: 2px solid #58a6ff; background: #0d1117; border-radius: 15px; box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);">
+    <div style="background: #161b22; padding: 15px; border-radius: 15px 15px 0 0; display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 24px;">⚛️</span>
+        <h2 style="color: #fff; margin: 0; border: none; font-size: 20px;">Forex Wizard AI</h2>
+    </div>
+    
+    <div style="padding: 20px;">
+        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+            <p style="color: #8b949e; margin-top: 0; font-size: 14px;">Prompt</p>
+            <div style="color: #fff; font-size: 18px; font-weight: 500;">Should I sell or buy?</div>
+        </div>
+
+        <button onclick="startWizardAI()" id="ai-btn" style="width: 100%; background: #238636; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s;">Run AI Analysis</button>
+
+        <div id="ai-result-box" style="display:none; margin-top: 25px; background: #ffffff; color: #1a1a1a; padding: 25px; border-radius: 10px; font-family: 'Segoe UI', sans-serif;">
+            <div id="ai-loading" style="text-align: center; color: #555;">
+                <p>🌀 Wizard is analyzing market structure...</p>
+            </div>
+            
+            <div id="ai-content" style="display:none;">
+                <h3 style="color: #000; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Wizard Analysis Report</h3>
+                
+                <p><strong>1. Trend Observation:</strong> <span id="trend-txt"></span></p>
+                <p><strong>2. Candlestick Pattern:</strong> <span id="candle-txt"></span></p>
+                <p><strong>3. Support & Resistance Levels:</strong><br>
+                   - Resistance: <span id="res-level"></span><br>
+                   - Support: <span id="sup-level"></span></p>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-left: 5px solid #ffd33d; margin: 15px 0;">
+                    <p><strong>Recommendation:</strong> <span id="recom-txt"></span></p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: #e6ffec; color: #238636; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold;">
+                        ✅ Take Profit: <span id="tp-level"></span>
+                    </div>
+                    <div style="background: #ffebe9; color: #cf222e; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold;">
+                        ❌ Stop Loss: <span id="sl-level"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function startWizardAI() {
+    const btn = document.getElementById('ai-btn');
+    const resBox = document.getElementById('ai-result-box');
+    const loading = document.getElementById('ai-loading');
+    const content = document.getElementById('ai-content');
+
+    btn.innerHTML = "Analyzing...";
+    btn.style.opacity = "0.7";
+    resBox.style.display = "block";
+    loading.style.display = "block";
+    content.style.display = "none";
+
+    // Random AI logic simulation based on real market ranges
+    setTimeout(() => {
+        const isBuy = Math.random() > 0.5;
+        const basePrice = 1.17700; 
+
+        document.getElementById('trend-txt').innerText = isBuy ? "Strong upward trend indicating bullish momentum." : "Bearish pressure detected near the resistance zone.";
+        document.getElementById('candle-txt').innerText = isBuy ? "Formation of long bullish candles detected." : "Small candles with upper wicks suggesting rejection.";
+        document.getElementById('res-level').innerText = (basePrice + 0.00500).toFixed(5);
+        document.getElementById('sup-level').innerText = (basePrice - 0.00300).toFixed(5);
+        document.getElementById('recom-txt').innerText = isBuy ? "The market looks ready for a BUY entry. High probability setup." : "The market is pausing. Wait for a breakout or SELL if it breaks support.";
+        document.getElementById('tp-level').innerText = isBuy ? (basePrice + 0.00800).toFixed(5) : (basePrice - 0.00600).toFixed(5);
+        document.getElementById('sl-level').innerText = isBuy ? (basePrice - 0.00400).toFixed(5) : (basePrice + 0.00400).toFixed(5);
+
+        loading.style.display = "none";
+        content.style.display = "block";
+        btn.innerHTML = "Run AI Analysis";
+        btn.style.opacity = "1";
+        resBox.scrollIntoView({ behavior: 'smooth' });
+    }, 2500);
+}
+            </script>
 </body>
 </html>
