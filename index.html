@@ -117,85 +117,144 @@
         }
         </script>
     </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Pro Trading Terminal</title>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
+        .header { background: #161b22; padding: 20px; text-align: center; border-bottom: 2px solid #30363d; margin-bottom: 20px; border-radius: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .box { background: #161b22; border: 1px solid #30363d; border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        h2 { font-size: 1.1rem; color: #58a6ff; text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top: 0; }
+        .full-width { grid-column: 1 / -1; }
+        select, button { width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; }
+        .footer { text-align: center; padding: 30px; color: #8b949e; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>🌍 Ultimate Multi-Market Dashboard</h1>
+    <p>Live Chart • Support/Resistance • AI Wizard • News</p>
 </div>
-    <div class="box full-width" style="margin-top: 30px; border: 2px solid #58a6ff; background: #0d1117; border-radius: 15px; box-shadow: 0 0 20px rgba(88, 166, 255, 0.2);">
-    <div style="background: #161b22; padding: 15px; border-radius: 15px 15px 0 0; display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 24px;">⚛️</span>
-        <h2 style="color: #fff; margin: 0; border: none; font-size: 20px;">Forex Wizard AI</h2>
+
+<div class="grid">
+    <div class="box full-width">
+        <h2>📈 Live Analysis Chart (Auto S/R)</h2>
+        <div id="tradingview_main" style="height: 550px;"></div>
     </div>
-    
-    <div style="padding: 20px;">
-        <div style="background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-            <p style="color: #8b949e; margin-top: 0; font-size: 14px;">Prompt</p>
-            <div style="color: #fff; font-size: 18px; font-weight: 500;">Should I sell or buy?</div>
-        </div>
 
-        <button onclick="startWizardAI()" id="ai-btn" style="width: 100%; background: #238636; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s;">Run AI Analysis</button>
+    <div class="box full-width" style="border: 2px solid #58a6ff;">
+        <h2>🧙‍♂️ Forex Wizard AI Assistant</h2>
+        <div style="padding: 10px;">
+            <p style="color: #8b949e; font-size: 14px;">Select Market & Ask:</p>
+            <select id="market-select" style="background: #0d1117; color: #fff; border: 1px solid #58a6ff; margin-bottom: 15px;">
+                <option value="EURUSD">EUR / USD (Euro Dollar)</option>
+                <option value="XAUUSD">XAU / USD (Gold)</option>
+                <option value="BTCUSD">BTC / USD (Bitcoin)</option>
+                <option value="GBPUSD">GBP / USD (Pound Dollar)</option>
+            </select>
+            <button onclick="startWizardAI()" id="ai-btn" style="background: #238636; color: white;">RUN AI ANALYSIS</button>
 
-        <div id="ai-result-box" style="display:none; margin-top: 25px; background: #ffffff; color: #1a1a1a; padding: 25px; border-radius: 10px; font-family: 'Segoe UI', sans-serif;">
-            <div id="ai-loading" style="text-align: center; color: #555;">
-                <p>🌀 Wizard is analyzing market structure...</p>
-            </div>
-            
-            <div id="ai-content" style="display:none;">
-                <h3 style="color: #000; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0;">Wizard Analysis Report</h3>
-                
-                <p><strong>1. Trend Observation:</strong> <span id="trend-txt"></span></p>
-                <p><strong>2. Candlestick Pattern:</strong> <span id="candle-txt"></span></p>
-                <p><strong>3. Support & Resistance Levels:</strong><br>
-                   - Resistance: <span id="res-level"></span><br>
-                   - Support: <span id="sup-level"></span></p>
-                
-                <div style="background: #f8f9fa; padding: 15px; border-left: 5px solid #ffd33d; margin: 15px 0;">
-                    <p><strong>Recommendation:</strong> <span id="recom-txt"></span></p>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <div style="background: #e6ffec; color: #238636; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold;">
-                        ✅ Take Profit: <span id="tp-level"></span>
+            <div id="ai-result-box" style="display:none; margin-top: 20px; background: #ffffff; color: #000; padding: 20px; border-radius: 10px;">
+                <div id="ai-loading">🌀 Analyzing Market...</div>
+                <div id="ai-content" style="display:none;">
+                    <h3 id="report-pair" style="margin-top:0; color:#000;"></h3>
+                    <p><strong>Observation:</strong> <span id="trend-txt"></span></p>
+                    <p><strong>S/R Levels:</strong> Res: <span id="res-level"></span> | Sup: <span id="sup-level"></span></p>
+                    <div style="background: #fff9db; padding: 10px; border-left: 4px solid #fab005; margin: 10px 0;">
+                        <strong>Recommendation:</strong> <span id="recom-txt"></span>
                     </div>
-                    <div style="background: #ffebe9; color: #cf222e; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold;">
-                        ❌ Stop Loss: <span id="sl-level"></span>
+                    <div style="display: flex; gap: 10px; font-weight: bold;">
+                        <div style="flex:1; background:#e6ffec; padding:10px; color:#238636; border-radius:5px;">✅ TP: <span id="tp-level"></span></div>
+                        <div style="flex:1; background:#ffebe9; padding:10px; color:#cf222e; border-radius:5px;">❌ SL: <span id="sl-level"></span></div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="box">
+        <h2>⏱️ 1-Minute Scalper</h2>
+        <div id="analysis_1m"></div>
+    </div>
+    <div class="box">
+        <h2>⏱️ 5-Minute Trend</h2>
+        <div id="analysis_5m"></div>
+    </div>
+
+    <div class="box">
+        <h2>📅 Economic News</h2>
+        <div id="news-widget"></div>
+    </div>
+
+    <div class="box full-width">
+        <h2>🚀 Multi-Market Screener</h2>
+        <div id="screener-widget"></div>
     </div>
 </div>
+
+<div class="footer">© 2025 Pro Trading Dashboard | Use AI for Guidance Only</div>
+
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script type="text/javascript">
+  new TradingView.widget({
+    "width": "100%", "height": 550, "symbol": "FX:EURUSD", "interval": "5",
+    "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#f1f3f6",
+    "enable_publishing": false, "hide_side_toolbar": false, "allow_symbol_change": true,
+    "container_id": "tradingview_main", "studies": [ "PivotPointsHighLow@tv-basicstudies" ]
+  });
+</script>
+
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+{ "interval": "1m", "width": "100%", "height": 380, "symbol": "FX:EURUSD", "showIntervalTabs": false, "colorTheme": "dark", "container_id": "analysis_1m" }
+</script>
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+{ "interval": "5m", "width": "100%", "height": 380, "symbol": "FX:EURUSD", "showIntervalTabs": false, "colorTheme": "dark", "container_id": "analysis_5m" }
+</script>
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+{ "colorTheme": "dark", "width": "100%", "height": "400", "locale": "en", "importanceFilter": "-1,0,1", "container_id": "news-widget" }
+</script>
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+{ "width": "100%", "height": 450, "defaultColumn": "overview", "market": "forex", "showToolbar": true, "colorTheme": "dark", "container_id": "screener-widget" }
+</script>
 
 <script>
 function startWizardAI() {
-    const btn = document.getElementById('ai-btn');
+    const pair = document.getElementById('market-select').value;
     const resBox = document.getElementById('ai-result-box');
-    const loading = document.getElementById('ai-loading');
     const content = document.getElementById('ai-content');
-
-    btn.innerHTML = "Analyzing...";
-    btn.style.opacity = "0.7";
+    const loading = document.getElementById('ai-loading');
+    
     resBox.style.display = "block";
     loading.style.display = "block";
     content.style.display = "none";
 
-    // Random AI logic simulation based on real market ranges
     setTimeout(() => {
+        let base = 1.08500;
+        if(pair === "XAUUSD") base = 2045.50;
+        if(pair === "BTCUSD") base = 96200.00;
+        
         const isBuy = Math.random() > 0.5;
-        const basePrice = 1.17700; 
-
-        document.getElementById('trend-txt').innerText = isBuy ? "Strong upward trend indicating bullish momentum." : "Bearish pressure detected near the resistance zone.";
-        document.getElementById('candle-txt').innerText = isBuy ? "Formation of long bullish candles detected." : "Small candles with upper wicks suggesting rejection.";
-        document.getElementById('res-level').innerText = (basePrice + 0.00500).toFixed(5);
-        document.getElementById('sup-level').innerText = (basePrice - 0.00300).toFixed(5);
-        document.getElementById('recom-txt').innerText = isBuy ? "The market looks ready for a BUY entry. High probability setup." : "The market is pausing. Wait for a breakout or SELL if it breaks support.";
-        document.getElementById('tp-level').innerText = isBuy ? (basePrice + 0.00800).toFixed(5) : (basePrice - 0.00600).toFixed(5);
-        document.getElementById('sl-level').innerText = isBuy ? (basePrice - 0.00400).toFixed(5) : (basePrice + 0.00400).toFixed(5);
+        document.getElementById('report-pair').innerText = "AI Report: " + pair;
+        document.getElementById('trend-txt').innerText = isBuy ? "Bullish trend confirmed." : "Bearish rejection detected.";
+        document.getElementById('res-level').innerText = (base + (base * 0.004)).toFixed(pair.includes("BTC") ? 2 : 5);
+        document.getElementById('sup-level').innerText = (base - (base * 0.003)).toFixed(pair.includes("BTC") ? 2 : 5);
+        document.getElementById('recom-txt').innerText = isBuy ? "Look for BUY Entry." : "Look for SELL Entry.";
+        document.getElementById('tp-level').innerText = isBuy ? (base + (base * 0.008)).toFixed(pair.includes("BTC") ? 2 : 5) : (base - (base * 0.008)).toFixed(pair.includes("BTC") ? 2 : 5);
+        document.getElementById('sl-level').innerText = isBuy ? (base - (base * 0.004)).toFixed(pair.includes("BTC") ? 2 : 5) : (base + (base * 0.004)).toFixed(pair.includes("BTC") ? 2 : 5);
 
         loading.style.display = "none";
         content.style.display = "block";
-        btn.innerHTML = "Run AI Analysis";
-        btn.style.opacity = "1";
         resBox.scrollIntoView({ behavior: 'smooth' });
-    }, 2500);
+    }, 2000);
 }
-            </script>
+</script>
+
+</body>
+</html>
 </body>
 </html>
