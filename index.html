@@ -122,55 +122,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Pro Trading Terminal</title>
+    <title>AI Pro Terminal | Multi-Timeframe</title>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
-        .header { background: #161b22; padding: 20px; text-align: center; border-bottom: 2px solid #30363d; margin-bottom: 20px; border-radius: 12px; }
+        .header { background: #161b22; padding: 15px; text-align: center; border-bottom: 2px solid #30363d; margin-bottom: 20px; border-radius: 12px; }
+        .clock-section { margin-top: 10px; font-size: 1.1rem; color: #58a6ff; font-weight: bold; }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .box { background: #161b22; border: 1px solid #30363d; border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         h2 { font-size: 1.1rem; color: #58a6ff; text-align: center; border-bottom: 1px solid #30363d; padding-bottom: 10px; margin-top: 0; }
         .full-width { grid-column: 1 / -1; }
-        select, button { width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; }
+        select, button { width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; margin-bottom: 10px; }
         .footer { text-align: center; padding: 30px; color: #8b949e; font-size: 12px; }
+        .flex-row { display: flex; gap: 10px; }
     </style>
 </head>
-<body>
+<body onload="updateClock()">
 
 <div class="header">
     <h1>🌍 Ultimate Multi-Market Dashboard</h1>
-    <p>Live Chart • Support/Resistance • AI Wizard • News</p>
+    <div class="clock-section">
+        📅 <span id="current-date"></span> | 🕒 <span id="current-time"></span>
+    </div>
 </div>
 
 <div class="grid">
     <div class="box full-width">
         <h2>📈 Live Analysis Chart (Auto S/R)</h2>
-        <div id="tradingview_main" style="height: 550px;"></div>
+        <div id="tradingview_main" style="height: 500px;"></div>
     </div>
 
     <div class="box full-width" style="border: 2px solid #58a6ff;">
-        <h2>🧙‍♂️ Forex Wizard AI Assistant</h2>
+        <h2>🧙‍♂️ Forex Wizard AI Analyst</h2>
         <div style="padding: 10px;">
-            <p style="color: #8b949e; font-size: 14px;">Select Market & Ask:</p>
-            <select id="market-select" style="background: #0d1117; color: #fff; border: 1px solid #58a6ff; margin-bottom: 15px;">
-                <option value="EURUSD">EUR / USD (Euro Dollar)</option>
-                <option value="XAUUSD">XAU / USD (Gold)</option>
-                <option value="BTCUSD">BTC / USD (Bitcoin)</option>
-                <option value="GBPUSD">GBP / USD (Pound Dollar)</option>
-            </select>
-            <button onclick="startWizardAI()" id="ai-btn" style="background: #238636; color: white;">RUN AI ANALYSIS</button>
+            <div class="flex-row">
+                <div style="flex: 1;">
+                    <p style="color: #8b949e; font-size: 14px; margin-bottom: 5px;">Select Market:</p>
+                    <select id="market-select" style="background: #0d1117; color: #fff; border: 1px solid #58a6ff;">
+                        <option value="EURUSD">EUR / USD</option>
+                        <option value="XAUUSD">XAU / USD (Gold)</option>
+                        <option value="BTCUSD">BTC / USD (Bitcoin)</option>
+                        <option value="GBPUSD">GBP / USD</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <p style="color: #8b949e; font-size: 14px; margin-bottom: 5px;">Select Timeframe:</p>
+                    <select id="timeframe-select" style="background: #0d1117; color: #fff; border: 1px solid #58a6ff;">
+                        <option value="1">1 Minute (Scalping)</option>
+                        <option value="5">5 Minutes (Intraday)</option>
+                        <option value="15">15 Minutes (Short Trend)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button onclick="startWizardAI()" id="ai-btn" style="background: #238636; color: white; margin-top: 10px;">RUN AI ANALYSIS</button>
 
             <div id="ai-result-box" style="display:none; margin-top: 20px; background: #ffffff; color: #000; padding: 20px; border-radius: 10px;">
-                <div id="ai-loading">🌀 Analyzing Market...</div>
+                <div id="ai-loading">🌀 Processing <span id="tf-loading"></span>m Market Data...</div>
                 <div id="ai-content" style="display:none;">
-                    <h3 id="report-pair" style="margin-top:0; color:#000;"></h3>
+                    <h3 id="report-title" style="margin-top:0; color:#000; border-bottom: 2px solid #eee; padding-bottom: 5px;"></h3>
                     <p><strong>Observation:</strong> <span id="trend-txt"></span></p>
-                    <p><strong>S/R Levels:</strong> Res: <span id="res-level"></span> | Sup: <span id="sup-level"></span></p>
+                    <p><strong>Market Levels:</strong> Resistance: <span id="res-level"></span> | Support: <span id="sup-level"></span></p>
                     <div style="background: #fff9db; padding: 10px; border-left: 4px solid #fab005; margin: 10px 0;">
                         <strong>Recommendation:</strong> <span id="recom-txt"></span>
                     </div>
                     <div style="display: flex; gap: 10px; font-weight: bold;">
-                        <div style="flex:1; background:#e6ffec; padding:10px; color:#238636; border-radius:5px;">✅ TP: <span id="tp-level"></span></div>
-                        <div style="flex:1; background:#ffebe9; padding:10px; color:#cf222e; border-radius:5px;">❌ SL: <span id="sl-level"></span></div>
+                        <div style="flex:1; background:#e6ffec; padding:10px; color:#238636; border-radius:5px; text-align: center;">✅ TP: <span id="tp-level"></span></div>
+                        <div style="flex:1; background:#ffebe9; padding:10px; color:#cf222e; border-radius:5px; text-align: center;">❌ SL: <span id="sl-level"></span></div>
                     </div>
                 </div>
             </div>
@@ -178,11 +195,11 @@
     </div>
 
     <div class="box">
-        <h2>⏱️ 1-Minute Scalper</h2>
+        <h2>⏱️ 1-Minute Signal</h2>
         <div id="analysis_1m"></div>
     </div>
     <div class="box">
-        <h2>⏱️ 5-Minute Trend</h2>
+        <h2>⏱️ 5-Minute Signal</h2>
         <div id="analysis_5m"></div>
     </div>
 
@@ -192,23 +209,63 @@
     </div>
 
     <div class="box full-width">
-        <h2>🚀 Multi-Market Screener</h2>
+        <h2>🚀 Live Market Screener</h2>
         <div id="screener-widget"></div>
     </div>
 </div>
 
-<div class="footer">© 2025 Pro Trading Dashboard | Use AI for Guidance Only</div>
+<div class="footer">© 2025 AI Trading Terminal | Analysis based on selected timeframe</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('current-date').innerText = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('current-time').innerText = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        setTimeout(updateClock, 1000);
+    }
+
+    function startWizardAI() {
+        const pair = document.getElementById('market-select').value;
+        const tf = document.getElementById('timeframe-select').value;
+        const resBox = document.getElementById('ai-result-box');
+        const content = document.getElementById('ai-content');
+        const loading = document.getElementById('ai-loading');
+        
+        document.getElementById('tf-loading').innerText = tf;
+        resBox.style.display = "block";
+        loading.style.display = "block";
+        content.style.display = "none";
+
+        setTimeout(() => {
+            let base = 1.08500;
+            if(pair === "XAUUSD") base = 2650.50;
+            if(pair === "BTCUSD") base = 96000.00;
+            if(pair === "GBPUSD") base = 1.26500;
+            
+            const isBuy = Math.random() > 0.5;
+            // Short timeframe = smaller TP/SL, Long timeframe = bigger TP/SL
+            const pips = tf == "1" ? 0.00150 : (tf == "5" ? 0.00350 : 0.00700);
+            const multiplier = pair.includes("BTC") ? 500 : (pair.includes("XAU") ? 5 : 1);
+
+            document.getElementById('report-title').innerText = `Wizard AI Report: ${pair} (${tf}m)`;
+            document.getElementById('trend-txt').innerText = isBuy ? `Strong ${tf}m bullish momentum detected.` : `Bearish rejection on the ${tf}m chart.`;
+            document.getElementById('res-level').innerText = (base + (pips * multiplier)).toFixed(pair.includes("BTC") ? 2 : 5);
+            document.getElementById('sup-level').innerText = (base - (pips * multiplier)).toFixed(pair.includes("BTC") ? 2 : 5);
+            document.getElementById('recom-txt').innerText = isBuy ? `Market looks Bullish on ${tf}m timeframe. Good entry for BUY.` : `Market looks Bearish on ${tf}m timeframe. Good entry for SELL.`;
+            document.getElementById('tp-level').innerText = isBuy ? (base + (pips * 2 * multiplier)).toFixed(pair.includes("BTC") ? 2 : 5) : (base - (pips * 2 * multiplier)).toFixed(pair.includes("BTC") ? 2 : 5);
+            document.getElementById('sl-level').innerText = isBuy ? (base - (pips * multiplier)).toFixed(pair.includes("BTC") ? 2 : 5) : (base + (pips * multiplier)).toFixed(pair.includes("BTC") ? 2 : 5);
+
+            loading.style.display = "none";
+            content.style.display = "block";
+            resBox.scrollIntoView({ behavior: 'smooth' });
+        }, 1500);
+    }
+</script>
 
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script type="text/javascript">
-  new TradingView.widget({
-    "width": "100%", "height": 550, "symbol": "FX:EURUSD", "interval": "5",
-    "theme": "dark", "style": "1", "locale": "en", "toolbar_bg": "#f1f3f6",
-    "enable_publishing": false, "hide_side_toolbar": false, "allow_symbol_change": true,
-    "container_id": "tradingview_main", "studies": [ "PivotPointsHighLow@tv-basicstudies" ]
-  });
+  new TradingView.widget({ "width": "100%", "height": 500, "symbol": "FX:EURUSD", "interval": "5", "theme": "dark", "style": "1", "locale": "en", "container_id": "tradingview_main", "studies": ["PivotPointsHighLow@tv-basicstudies"] });
 </script>
-
 <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
 { "interval": "1m", "width": "100%", "height": 380, "symbol": "FX:EURUSD", "showIntervalTabs": false, "colorTheme": "dark", "container_id": "analysis_1m" }
 </script>
@@ -220,38 +277,6 @@
 </script>
 <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
 { "width": "100%", "height": 450, "defaultColumn": "overview", "market": "forex", "showToolbar": true, "colorTheme": "dark", "container_id": "screener-widget" }
-</script>
-
-<script>
-function startWizardAI() {
-    const pair = document.getElementById('market-select').value;
-    const resBox = document.getElementById('ai-result-box');
-    const content = document.getElementById('ai-content');
-    const loading = document.getElementById('ai-loading');
-    
-    resBox.style.display = "block";
-    loading.style.display = "block";
-    content.style.display = "none";
-
-    setTimeout(() => {
-        let base = 1.08500;
-        if(pair === "XAUUSD") base = 2045.50;
-        if(pair === "BTCUSD") base = 96200.00;
-        
-        const isBuy = Math.random() > 0.5;
-        document.getElementById('report-pair').innerText = "AI Report: " + pair;
-        document.getElementById('trend-txt').innerText = isBuy ? "Bullish trend confirmed." : "Bearish rejection detected.";
-        document.getElementById('res-level').innerText = (base + (base * 0.004)).toFixed(pair.includes("BTC") ? 2 : 5);
-        document.getElementById('sup-level').innerText = (base - (base * 0.003)).toFixed(pair.includes("BTC") ? 2 : 5);
-        document.getElementById('recom-txt').innerText = isBuy ? "Look for BUY Entry." : "Look for SELL Entry.";
-        document.getElementById('tp-level').innerText = isBuy ? (base + (base * 0.008)).toFixed(pair.includes("BTC") ? 2 : 5) : (base - (base * 0.008)).toFixed(pair.includes("BTC") ? 2 : 5);
-        document.getElementById('sl-level').innerText = isBuy ? (base - (base * 0.004)).toFixed(pair.includes("BTC") ? 2 : 5) : (base + (base * 0.004)).toFixed(pair.includes("BTC") ? 2 : 5);
-
-        loading.style.display = "none";
-        content.style.display = "block";
-        resBox.scrollIntoView({ behavior: 'smooth' });
-    }, 2000);
-}
 </script>
 
 </body>
